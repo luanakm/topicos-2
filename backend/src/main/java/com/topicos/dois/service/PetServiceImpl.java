@@ -4,6 +4,7 @@ import com.topicos.dois.dto.request.PetRequestDTO;
 import com.topicos.dois.dto.response.PetResponseDTO;
 import com.topicos.dois.entity.Pet;
 import com.topicos.dois.repository.PetRepository;
+import com.topicos.dois.util.PetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

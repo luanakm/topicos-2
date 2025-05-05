@@ -14,7 +14,7 @@ public interface AgendaService {
 
     List<AgendaResponseDTO> findAll();
 
-    AgendaResponseDTO register(AgendaResponseDTO agendaResponseDTO);
+    AgendaResponseDTO register(AgendaRequestDTO agendaRequestDTO);
 
     AgendaResponseDTO update(Long id, AgendaRequestDTO agendaRequestDTO);
 

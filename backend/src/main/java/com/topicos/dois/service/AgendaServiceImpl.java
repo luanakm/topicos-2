@@ -1,14 +1,10 @@
 package com.topicos.dois.service;
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
-import com.topicos.dois.dto.request.TutorRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
-import com.topicos.dois.dto.response.TutorResponseDTO;
 import com.topicos.dois.entity.Agenda;
-import com.topicos.dois.entity.Tutor;
 import com.topicos.dois.repository.AgendaRepository;
-import com.topicos.dois.repository.TutorRepository;
-import com.topicos.dois.util.TutorMapper;
+import com.topicos.dois.util.AgendaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -36,11 +32,6 @@ public class AgendaServiceImpl implements AgendaService {
     }
 
     @Override
-    public AgendaResponseDTO register(AgendaResponseDTO agendaResponseDTO) {
-        return null;
-    }
-
-    @Override
     public AgendaResponseDTO register(AgendaRequestDTO agendaRequestDTO) {
 
         Agenda agenda = agendaMapper.toAgenda(agendaRequestDTO);
@@ -49,7 +40,7 @@ public class AgendaServiceImpl implements AgendaService {
     }
 
     @Override
-    public AgendaResponseDTO update(Long id, AgendaRequestDTO agendaRequestDTORequestDTO) {
+    public AgendaResponseDTO update(Long id, AgendaRequestDTO agendaRequestDTO) {
 
         Agenda agenda = returnAgenda(id);
 

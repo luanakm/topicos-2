@@ -32,7 +32,7 @@ public class AgendaController {
     }
 
     @PostMapping
-    public ResponseEntity<AgendaResponseDTO> register(@RequestBody TutorRequestDTO tutorRequestDTO, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<AgendaResponseDTO> register(@RequestBody AgendaRequestDTO agendaRequestDTO, UriComponentsBuilder uriBuilder) {
 
         AgendaResponseDTO agendaResponseDTO = agendaService.register(agendaRequestDTO);
 
