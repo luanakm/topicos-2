@@ -2,9 +2,7 @@ package com.topicos.dois.service;
 
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
-import com.topicos.dois.dto.request.TutorRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
-import com.topicos.dois.dto.response.TutorResponseDTO;
 
 import java.util.List;
 

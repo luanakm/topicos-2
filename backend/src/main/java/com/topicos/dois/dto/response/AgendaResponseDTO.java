@@ -2,7 +2,6 @@ package com.topicos.dois.dto.response;
 
 
 import com.topicos.dois.entity.Agenda;
-import com.topicos.dois.entity.Tutor;
 import lombok.Getter;
 
 @Getter

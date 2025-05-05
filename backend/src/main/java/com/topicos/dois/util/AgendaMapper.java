@@ -1,11 +1,8 @@
 package com.topicos.dois.util;
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
-import com.topicos.dois.dto.request.TutorRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
-import com.topicos.dois.dto.response.TutorResponseDTO;
 import com.topicos.dois.entity.Agenda;
-import com.topicos.dois.entity.Tutor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

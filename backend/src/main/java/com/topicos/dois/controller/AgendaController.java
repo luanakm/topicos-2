@@ -1,11 +1,8 @@
 package com.topicos.dois.controller;
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
-import com.topicos.dois.dto.request.TutorRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
-import com.topicos.dois.dto.response.TutorResponseDTO;
 import com.topicos.dois.service.AgendaService;
-import com.topicos.dois.service.TutorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
