@@ -1,0 +1,10 @@
+com\topicos\dois\entity\Person.class
+com\topicos\dois\PetShopApplication.class
+com\topicos\dois\controller\PersonController.class
+com\topicos\dois\repository\PersonRepository.class
+com\topicos\dois\util\PersonMapper.class
+com\topicos\dois\entity\Person$PersonBuilder.class
+com\topicos\dois\dto\response\PersonResponseDTO.class
+com\topicos\dois\service\PersonServiceImpl.class
+com\topicos\dois\service\PersonService.class
+com\topicos\dois\dto\request\PersonRequestDTO.class
