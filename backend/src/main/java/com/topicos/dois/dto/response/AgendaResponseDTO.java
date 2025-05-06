@@ -9,21 +9,18 @@ public class AgendaResponseDTO {
 
     private Long id;
 
-    private String datainicio;
+    private String dataHora;
 
-    private String datafim ;
+    private String nome;
 
-    private String tiposerviço;
-
-    private String status;
+    private String servico;
 
 
     public AgendaResponseDTO(Agenda agenda) {
         this.id = agenda.getId();
-        this.datainicio = agenda.getDatainicio();
-        this.datafim = agenda.getDatafim();
-        this.tiposerviço = agenda.getTiposervico();
-        this.status = agenda.getStatus();
+        this.dataHora = agenda.getDataHora();
+        this.nome = agenda.getNome();
+        this.servico = agenda.getServico();
     }
 
 

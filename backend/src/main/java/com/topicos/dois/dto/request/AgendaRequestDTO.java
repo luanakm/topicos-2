@@ -5,12 +5,9 @@ import lombok.Getter;
 @Getter
 public class AgendaRequestDTO {
 
-    private String datainicio;
+    private String dataHora;
 
-    private String datafim;
+    private String nome;
 
-
-    private String tiposervico;
-
-    private String status;
+    private String servico;
 }

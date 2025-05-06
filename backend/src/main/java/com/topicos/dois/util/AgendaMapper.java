@@ -14,10 +14,9 @@ public class AgendaMapper {
     public Agenda toAgenda(AgendaRequestDTO agendaRequestDTO) {
 
         return Agenda.builder()
-                .datainicio(agendaRequestDTO.getDatainicio())
-                .datafim(agendaRequestDTO.getDatafim())
-                .tiposervico(agendaRequestDTO.getTiposervico())
-                .status(agendaRequestDTO.getStatus())
+                .dataHora(agendaRequestDTO.getDataHora())
+                .nome(agendaRequestDTO.getNome())
+                .servico(agendaRequestDTO.getServico())
                 .build();
 
     }
@@ -32,10 +31,9 @@ public class AgendaMapper {
 
     public void atualizarAgenda(Agenda agenda, AgendaRequestDTO agendaDTO) {
 
-        agenda.setDatainicio(agendaDTO.getDatainicio());
-        agenda.setDatafim(agendaDTO.getDatafim());
-        agenda.setTiposervico(agendaDTO.getTiposervico());
-        agenda.setStatus(agendaDTO.getStatus());
+        agenda.setDataHora(agendaDTO.getDataHora());
+        agenda.setNome(agendaDTO.getNome());
+        agenda.setServico(agendaDTO.getServico());
 
     }
 

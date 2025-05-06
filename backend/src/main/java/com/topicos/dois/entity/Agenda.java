@@ -16,24 +16,21 @@ public class Agenda {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "data inicio", nullable = false)
-    private String datainicio;
+    @Column(name = "data hora", nullable = false)
+    private String dataHora;
 
-    @Column(name = "datafim", nullable = false, unique = true)
-    private String datafim;
+    @Column(name = "nome", nullable = false)
+    private String nome;
 
-    @Column(name = "tipo servico", nullable = false)
-    private String tiposervico;
-
-    @Column(name = "status", nullable = false)
-    private String status;
+    @Column(name = "servico", nullable = false)
+    private String servico;
 
     @Builder
-    public Agenda(String datainicio, String datafim, String tiposervico, String status) {
-        this.datainicio = datainicio;
-        this.datafim = datafim;
-        this.tiposervico = tiposervico;
-        this.status = status;
+    public Agenda(String dataHora, String nome, String servico) {
+        this.dataHora = dataHora;
+        this.nome = nome;
+        this.servico = servico;
+
     }
 
 }
