@@ -25,12 +25,16 @@ public class Agenda {
     @Column(name = "servico", nullable = false)
     private String servico;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "funcionario_id", nullable = false)
+    private Funcionario funcionario;
+
     @Builder
-    public Agenda(String dataHora, String nome, String servico) {
+    public Agenda(String dataHora, String nome, String servico, Funcionario funcionario) {
         this.dataHora = dataHora;
         this.nome = nome;
         this.servico = servico;
-
+        this.funcionario = funcionario;
     }
 
 }

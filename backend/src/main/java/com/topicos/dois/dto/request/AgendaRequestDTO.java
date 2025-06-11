@@ -10,4 +10,6 @@ public class AgendaRequestDTO {
     private String nome;
 
     private String servico;
+
+    private Long funcionarioId;
 }

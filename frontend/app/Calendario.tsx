@@ -17,57 +17,37 @@ type Agendamento = {
   nome: string;
   servico: string;
   dataHora: string;
+  funcionarioId: number;
+  funcionarioNome: string;
 };
 
-const agendamentosSeed = [
-  { id: 1, nome: 'Thor', servico: 'banho', dataHora: '2025-04-28T11:00' },
-  { id: 2, nome: 'Luna', servico: 'banho+tosa', dataHora: '2025-04-29T10:00' },
-  { id: 3, nome: 'Mel', servico: 'tosa', dataHora: '2025-04-30T15:00' },
-  { id: 4, nome: 'Simba', servico: 'banho+tosa', dataHora: '2025-05-01T09:00' },
-  { id: 5, nome: 'Milo', servico: 'banho', dataHora: '2025-05-02T08:00' },
-  { id: 6, nome: 'Bob', servico: 'banho', dataHora: '2025-04-29T11:00' },
-  { id: 7, nome: 'Amora', servico: 'banho+tosa', dataHora: '2025-04-29T14:00' },
-  { id: 8, nome: 'Fred', servico: 'tosa', dataHora: '2025-04-30T08:00' },
-  { id: 9, nome: 'Maggie', servico: 'banho', dataHora: '2025-05-01T14:00' },
-  { id: 10, nome: 'Zeus', servico: 'banho+tosa', dataHora: '2025-04-28T09:00' },
-  { id: 11, nome: 'Toby', servico: 'tosa', dataHora: '2025-05-02T13:00' },
-  { id: 12, nome: 'Bela', servico: 'banho+tosa', dataHora: '2025-04-29T16:00' },
-  { id: 13, nome: 'Kiko', servico: 'banho', dataHora: '2025-04-28T14:00' },
-  { id: 14, nome: 'Pandora', servico: 'tosa', dataHora: '2025-04-30T12:00' },
-  {
-    id: 15,
-    nome: 'Marley',
-    servico: 'banho+tosa',
-    dataHora: '2025-05-01T16:00',
-  },
-  { id: 16, nome: 'Lola', servico: 'tosa', dataHora: '2025-05-02T09:00' },
-  { id: 17, nome: 'Rex', servico: 'banho', dataHora: '2025-04-28T16:00' },
-  { id: 18, nome: 'Zeca', servico: 'banho+tosa', dataHora: '2025-04-30T10:00' },
-  { id: 19, nome: 'Lili', servico: 'tosa', dataHora: '2025-05-01T11:00' },
-  { id: 20, nome: 'Spike', servico: 'banho', dataHora: '2025-05-02T15:00' },
-];
+type Funcionario = {
+  id: number;
+  nome: string;
+};
 
 export default function Calendario() {
   const [semanaAtual, setSemanaAtual] = useState(new Date());
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [agendamentos, setAgendamentos] =
-    useState<Agendamento[]>(agendamentosSeed);
+  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [dadosFormulario, setDadosFormulario] = useState({
     id: 0,
     nome: '',
     servico: '',
     dataHora: '',
+    funcionarioId: 0,
   });
+
+  const [mostrarModalFuncionario, setMostrarModalFuncionario] = useState(false);
+  const [nomeFuncionario, setNomeFuncionario] = useState('');
+  const [funcionarios, setFuncionarios] = useState<{ id: number; nome: string }[]>([]);
+
+
+
 
   async function carregarAgendamentos() {
     try {
-      const response = await axios.get(
-        'http://localhost:10000/agenda', {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      }
-      );
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/agenda');
       setAgendamentos(response.data);
     } catch (error) {
       console.error('Erro ao buscar agendamentos:', error);
@@ -75,16 +55,29 @@ export default function Calendario() {
     }
   }
 
-  useEffect(() => {
+  async function carregarFuncionarios() {
+    try {
+      const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/funcionario');
+      setFuncionarios(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar funcionários:', error);
+      setFuncionarios([]);
+    }
+  }
 
+  useEffect(() => {
     carregarAgendamentos();
+    carregarFuncionarios();
   }, []);
 
   const diasDaSemana: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    diasDaSemana.push(
-      addDays(startOfWeek(semanaAtual, { weekStartsOn: 1 }), i)
-    );
+    diasDaSemana.push(addDays(startOfWeek(semanaAtual, { weekStartsOn: 1 }), i));
+  }
+
+  const horas = [];
+  for (let i = 8; i <= 18; i++) {
+    horas.push(i + 'h');
   }
 
   function irParaSemanaAnterior() {
@@ -103,38 +96,27 @@ export default function Calendario() {
     setDadosFormulario({ ...dadosFormulario, [e.target.name]: e.target.value });
   }
 
-  const horas = [];
-  for (let i = 8; i <= 18; i++) {
-    horas.push(i + 'h');
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      console.log(dadosFormulario);
-      if (dadosFormulario.id == 0) {
-        await axios.post(
-          'http://localhost:10000/agenda',
-          dadosFormulario, {
-          headers: {
-            'Access-Control-Allow-Origin': '*'
-          }
-        }
-        );
+      const payload = {
+        nome: dadosFormulario.nome,
+        servico: dadosFormulario.servico,
+        dataHora: dadosFormulario.dataHora,
+        funcionarioId: Number(dadosFormulario.funcionarioId),
+      };
+
+      if (dadosFormulario.id === 0) {
+        await axios.post(process.env.NEXT_PUBLIC_API_URL + '/agenda', payload);
       } else {
         await axios.put(
-          'http://localhost:10000/agenda/' + dadosFormulario.id,
-          dadosFormulario, {
-          headers: {
-            'Access-Control-Allow-Origin': '*'
-          }
-        }
+          process.env.NEXT_PUBLIC_API_URL + '/agenda/' + dadosFormulario.id,
+          payload
         );
       }
 
       setMostrarModal(false);
-      setDadosFormulario({ id: 0, nome: '', servico: '', dataHora: '' });
-
+      setDadosFormulario({ id: 0, nome: '', servico: '', dataHora: '', funcionarioId: 0 });
       await carregarAgendamentos();
     } catch (error) {
       console.error('Erro ao salvar:', error);
@@ -142,14 +124,42 @@ export default function Calendario() {
     }
   }
 
-  function editarAgendamento(agendamento: any) {
+  async function handleSalvarFuncionario(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      await axios.post(process.env.NEXT_PUBLIC_API_URL + '/funcionario', {
+        nome: nomeFuncionario,
+      });
+      setMostrarModalFuncionario(false);
+      setNomeFuncionario('');
+      await carregarFuncionarios(); // atualiza a lista de funcionários
+    } catch (err) {
+      console.error('Erro ao cadastrar funcionário:', err);
+      alert('Erro ao salvar funcionário.');
+    }
+  }
+
+
+  function editarAgendamento(agendamento: Agendamento) {
     setDadosFormulario({
       id: agendamento.id,
       nome: agendamento.nome,
       servico: agendamento.servico,
       dataHora: agendamento.dataHora,
+      funcionarioId: agendamento.funcionarioId,
     });
     setMostrarModal(true);
+  }
+
+  async function deletarRegistro(id: number) {
+    try {
+      await axios.delete(process.env.NEXT_PUBLIC_API_URL + '/agenda/' + id);
+      await carregarAgendamentos();
+      setMostrarModal(false);
+    } catch (error) {
+      console.error('Erro ao deletar:', error);
+      alert('Erro ao deletar. Tente novamente.');
+    }
   }
 
   function corPorServico(servico: string) {
@@ -157,19 +167,6 @@ export default function Calendario() {
     if (servico === 'tosa') return 'bg-green-100 text-green-700';
     if (servico === 'banho+tosa') return 'bg-pink-100 text-pink-700';
     return 'bg-gray-100 text-gray-700';
-  }
-
-  async function deletarRegistro(id: number) {
-    try {
-      await axios.delete(
-        'http://localhost:10000/agenda/' + id
-      );
-      await carregarAgendamentos();
-      setMostrarModal(false);
-    } catch (error) {
-      console.error('Erro ao deletar:', error);
-      alert('Erro ao deletar. Tente novamente.');
-    }
   }
 
   return (
@@ -180,30 +177,22 @@ export default function Calendario() {
           {format(semanaAtual, 'MMMM yyyy', { locale: ptBR })}
         </h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={irParaSemanaAnterior}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ←
-          </button>
-          <button
-            onClick={irParaHoje}
-            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 text-sm"
-          >
-            Hoje
-          </button>
-          <button
-            onClick={irParaProximaSemana}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            →
-          </button>
+          <button onClick={irParaSemanaAnterior} className="text-gray-500 hover:text-gray-700">←</button>
+          <button onClick={irParaHoje} className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 text-sm">Hoje</button>
+          <button onClick={irParaProximaSemana} className="text-gray-500 hover:text-gray-700">→</button>
           <button
             onClick={() => setMostrarModal(true)}
             className="ml-4 bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition"
           >
             Novo Agendamento
           </button>
+          <button
+            onClick={() => setMostrarModalFuncionario(true)}
+            className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
+          >
+            Novo Funcionário
+          </button>
+
         </div>
       </div>
 
@@ -213,9 +202,7 @@ export default function Calendario() {
         {diasDaSemana.map((dia, indice) => (
           <div
             key={indice}
-            className={`border-b border-r border-gray-300 h-12 text-center font-medium text-sm flex items-center justify-center ${isToday(dia)
-              ? 'bg-violet-100 text-violet-700 font-semibold'
-              : 'bg-gray-50 text-gray-600'
+            className={`border-b border-r border-gray-300 h-12 text-center font-medium text-sm flex items-center justify-center ${isToday(dia) ? 'bg-violet-100 text-violet-700 font-semibold' : 'bg-gray-50 text-gray-600'
               }`}
           >
             {format(dia, 'EEE dd', { locale: ptBR })}
@@ -229,8 +216,7 @@ export default function Calendario() {
             </div>
             {diasDaSemana.map((dia, indexDia) => {
               const dataFormatada = format(dia, 'yyyy-MM-dd');
-              const horaAtual =
-                (indexHora + 8).toString().padStart(2, '0') + ':00';
+              const horaAtual = (indexHora + 8).toString().padStart(2, '0') + ':00';
               const agendamento = agendamentos.find((ag) => {
                 const [dataAg, horaAg] = ag.dataHora.split('T');
                 return dataAg === dataFormatada && horaAg.startsWith(horaAtual);
@@ -245,12 +231,9 @@ export default function Calendario() {
                 >
                   {agendamento ? (
                     <div className="text-center">
-                      <div className="font-semibold text-violet-700">
-                        {agendamento.nome}
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        {agendamento.servico}
-                      </div>
+                      <div className="font-semibold text-violet-700">{agendamento.nome}</div>
+                      <div className="text-gray-500 text-xs">{agendamento.servico}</div>
+                      <div className="text-gray-400 text-[10px] italic">{agendamento.funcionarioNome}</div>
                     </div>
                   ) : null}
                 </div>
@@ -260,35 +243,31 @@ export default function Calendario() {
         ))}
       </div>
 
+      {/* Modal */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-gray-200 bg-opacity-10 backdrop-blur-none flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Novo Agendamento
-            </h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Novo Agendamento</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nome do pet
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Nome do pet</label>
                 <input
                   type="text"
                   name="nome"
                   value={dadosFormulario.nome}
                   onChange={lidarComMudanca}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
                   required
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Serviço
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Serviço</label>
                 <select
                   name="servico"
                   value={dadosFormulario.servico}
                   onChange={lidarComMudanca}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
                   required
                 >
                   <option value="">Selecione</option>
@@ -297,64 +276,65 @@ export default function Calendario() {
                   <option value="banho+tosa">Banho + Tosa</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Funcionário</label>
+                <select
+                  name="funcionarioId"
+                  value={dadosFormulario.funcionarioId}
+                  onChange={lidarComMudanca}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
+                  required
+                >
+                  <option value="">Selecione um funcionário</option>
+                  {funcionarios.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Data
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Data</label>
                   <input
                     type="date"
-                    name="data"
                     value={dadosFormulario.dataHora.split('T')[0] || ''}
                     onChange={(e) => {
                       const hora = dadosFormulario.dataHora.split('T')[1] || '';
-                      setDadosFormulario({
-                        ...dadosFormulario,
-                        dataHora: `${e.target.value}T${hora}`,
-                      });
+                      setDadosFormulario({ ...dadosFormulario, dataHora: `${e.target.value}T${hora}` });
                     }}
-                    className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Hora
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Hora</label>
                   <select
-                    name="hora"
                     value={dadosFormulario.dataHora.split('T')[1] || ''}
                     onChange={(e) => {
                       const data = dadosFormulario.dataHora.split('T')[0] || '';
-                      setDadosFormulario({
-                        ...dadosFormulario,
-                        dataHora: `${data}T${e.target.value}`,
-                      });
+                      setDadosFormulario({ ...dadosFormulario, dataHora: `${data}T${e.target.value}` });
                     }}
-                    className="mt-1 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                     required
                   >
                     <option value="">Selecione...</option>
                     {Array.from({ length: 11 }, (_, i) => {
                       const hora = i + 8;
-                      return (
-                        <option
-                          key={hora}
-                          value={`${hora}:00`}
-                        >{`${hora}:00`}</option>
-                      );
+                      return <option key={hora} value={`${hora}:00`}>{`${hora}:00`}</option>;
                     })}
                   </select>
                 </div>
               </div>
 
               <div className="flex justify-between items-center mt-4">
-
                 <button
                   type="button"
                   onClick={() => {
                     setMostrarModal(false);
-                    setDadosFormulario({ id: 0, nome: '', servico: '', dataHora: '' });
+                    setDadosFormulario({ id: 0, nome: '', servico: '', dataHora: '', funcionarioId: 0 });
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                 >
@@ -379,12 +359,49 @@ export default function Calendario() {
                   </button>
                 </div>
               </div>
-
-
             </form>
           </div>
         </div>
       )}
+      {mostrarModalFuncionario && (
+        <div className="fixed inset-0 bg-gray-200 bg-opacity-10 backdrop-blur-none flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Novo Funcionário</h2>
+            <form onSubmit={handleSalvarFuncionario} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Nome</label>
+                <input
+                  type="text"
+                  value={nomeFuncionario}
+                  onChange={(e) => setNomeFuncionario(e.target.value)}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMostrarModalFuncionario(false);
+                    setNomeFuncionario('');
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
