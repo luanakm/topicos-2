@@ -2,7 +2,9 @@ package com.topicos.dois.service;
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
+import com.topicos.dois.dto.response.FuncionarioResponseDTO;
 import com.topicos.dois.entity.Agenda;
+import com.topicos.dois.entity.Funcionario;
 import com.topicos.dois.repository.AgendaRepository;
 import com.topicos.dois.util.AgendaMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class AgendaServiceImpl implements AgendaService {
 
     private final AgendaMapper agendaMapper;
 
+    private final FuncionarioService funcionarioService;
 
     @Override
     public AgendaResponseDTO findById(Long id) {
@@ -43,8 +46,9 @@ public class AgendaServiceImpl implements AgendaService {
     public AgendaResponseDTO update(Long id, AgendaRequestDTO agendaRequestDTO) {
 
         Agenda agenda = returnAgenda(id);
+        Funcionario funcionario = returnFuncionario(agendaRequestDTO.getFuncionarioId());
 
-        agendaMapper.atualizarAgenda(agenda, agendaRequestDTO);
+        agendaMapper.atualizarAgenda(agenda,funcionario, agendaRequestDTO);
 
         return agendaMapper.toAgendaDTO(agendaRepository.save(agenda));
     }
@@ -58,6 +62,10 @@ public class AgendaServiceImpl implements AgendaService {
     private Agenda returnAgenda(Long id) {
        return agendaRepository.findById(id)
                .orElseThrow(()-> new RuntimeException("Agenda wasn't fount on database"));
+    }
+
+    private Funcionario returnFuncionario(Long id) {
+       return funcionarioService.findById(id);
     }
 
 }

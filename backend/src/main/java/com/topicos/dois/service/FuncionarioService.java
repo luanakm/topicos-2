@@ -2,12 +2,13 @@ package com.topicos.dois.service;
 
 import com.topicos.dois.dto.request.FuncionarioRequestDTO;
 import com.topicos.dois.dto.response.FuncionarioResponseDTO;
+import com.topicos.dois.entity.Funcionario;
 
 import java.util.List;
 
 public interface FuncionarioService {
 
-    FuncionarioResponseDTO findById(Long id);
+    Funcionario findById(Long id);
 
     List<FuncionarioResponseDTO> findByNome(String nome);
 

@@ -38,6 +38,7 @@ export default function Calendario() {
     funcionarioId: 0,
   });
 
+  const [funcionarioIdEditando, setFuncionarioIdEditando] = useState<number | null>(null);
   const [mostrarModalFuncionario, setMostrarModalFuncionario] = useState(false);
   const [nomeFuncionario, setNomeFuncionario] = useState('');
   const [funcionarios, setFuncionarios] = useState<{ id: number; nome: string }[]>([]);
@@ -124,20 +125,6 @@ export default function Calendario() {
     }
   }
 
-  async function handleSalvarFuncionario(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      await axios.post(process.env.NEXT_PUBLIC_API_URL + '/funcionario', {
-        nome: nomeFuncionario,
-      });
-      setMostrarModalFuncionario(false);
-      setNomeFuncionario('');
-      await carregarFuncionarios(); // atualiza a lista de funcionários
-    } catch (err) {
-      console.error('Erro ao cadastrar funcionário:', err);
-      alert('Erro ao salvar funcionário.');
-    }
-  }
 
 
   function editarAgendamento(agendamento: Agendamento) {
@@ -169,6 +156,48 @@ export default function Calendario() {
     return 'bg-gray-100 text-gray-700';
   }
 
+  async function handleSalvarFuncionario(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (nomeFuncionario === '') {
+      alert('Falta informar o nome do funcionário');
+      return;
+    }
+
+    try {
+      if (funcionarioIdEditando === null) {
+        await axios.post(process.env.NEXT_PUBLIC_API_URL + '/funcionario', {
+          nome: nomeFuncionario
+        });
+      } else {
+        await axios.put(process.env.NEXT_PUBLIC_API_URL + '/funcionario/' + funcionarioIdEditando, {
+          nome: nomeFuncionario
+        });
+        setFuncionarioIdEditando(null);
+      }
+
+      setNomeFuncionario('');
+      carregarFuncionarios();
+    } catch (err) {
+      console.log(err);
+      alert('Erro ao salvar ou editar funcionário');
+    }
+  }
+
+  async function deletarFuncionario(id:number) {
+    let confirma = confirm('tem certeza que quer apagar?');
+
+    if (!confirma) return;
+
+    try {
+      await axios.delete(process.env.NEXT_PUBLIC_API_URL + '/funcionario/' + id);
+      carregarFuncionarios();
+    } catch (err) {
+      console.log(err);
+      alert('Erro ao deletar funcionário');
+    }
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto bg-[#f9fafb] min-h-screen rounded-xl">
       {/* Cabeçalho */}
@@ -190,7 +219,7 @@ export default function Calendario() {
             onClick={() => setMostrarModalFuncionario(true)}
             className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
           >
-            Novo Funcionário
+            Funcionários
           </button>
 
         </div>
@@ -363,10 +392,14 @@ export default function Calendario() {
           </div>
         </div>
       )}
+
       {mostrarModalFuncionario && (
         <div className="fixed inset-0 bg-gray-200 bg-opacity-10 backdrop-blur-none flex justify-center items-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Novo Funcionário</h2>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              {funcionarioIdEditando ? 'Editar Funcionário' : 'Novo Funcionário'}
+            </h2>
+
             <form onSubmit={handleSalvarFuncionario} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Nome</label>
@@ -385,6 +418,7 @@ export default function Calendario() {
                   onClick={() => {
                     setMostrarModalFuncionario(false);
                     setNomeFuncionario('');
+                    setFuncionarioIdEditando(null);
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                 >
@@ -398,9 +432,42 @@ export default function Calendario() {
                 </button>
               </div>
             </form>
+
+            {/* Lista de Funcionários */}
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Funcionários Cadastrados</h3>
+              <ul className="space-y-2">
+                {funcionarios.map((f) => (
+                  <li
+                    key={f.id}
+                    className="flex justify-between items-center border border-gray-200 rounded-lg px-3 py-2 hover:bg-gray-50 transition"
+                  >
+                    <span className="text-sm text-gray-800">{f.nome}</span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setNomeFuncionario(f.nome);
+                          setFuncionarioIdEditando(f.id);
+                        }}
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => deletarFuncionario(f.id)}
+                        className="text-xs text-red-600 hover:underline"
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       )}
+
 
     </div>
   );

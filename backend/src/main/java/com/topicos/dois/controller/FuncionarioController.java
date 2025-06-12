@@ -20,10 +20,6 @@ public class FuncionarioController {
 
     private final FuncionarioService funcionarioService;
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<FuncionarioResponseDTO> findById(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok().body(funcionarioService.findById(id));
-    }
     @GetMapping(value = "/nome/{nome}")
     public ResponseEntity<List<FuncionarioResponseDTO>> findByNome(@PathVariable(name = "nome") String nome) {
         return ResponseEntity.ok().body(funcionarioService.findByNome(nome));

@@ -2,6 +2,7 @@ package com.topicos.dois.util;
 
 import com.topicos.dois.dto.request.AgendaRequestDTO;
 import com.topicos.dois.dto.response.AgendaResponseDTO;
+import com.topicos.dois.dto.response.FuncionarioResponseDTO;
 import com.topicos.dois.entity.Agenda;
 import com.topicos.dois.entity.Funcionario;
 import com.topicos.dois.repository.FuncionarioRepository;
@@ -36,11 +37,12 @@ public class AgendaMapper {
         return listaDeAgenda.stream().map(AgendaResponseDTO::new).collect(Collectors.toList());
     }
 
-    public void atualizarAgenda(Agenda agenda, AgendaRequestDTO agendaDTO) {
+    public void atualizarAgenda(Agenda agenda, Funcionario funcionario, AgendaRequestDTO agendaDTO) {
 
         agenda.setDataHora(agendaDTO.getDataHora());
         agenda.setNome(agendaDTO.getNome());
         agenda.setServico(agendaDTO.getServico());
+        agenda.setFuncionario(funcionario);
 
     }
 

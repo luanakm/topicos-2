@@ -24,8 +24,8 @@ public class FuncionarioServiceImpl implements FuncionarioService {
 
 
     @Override
-    public FuncionarioResponseDTO findById(Long id) {
-     return funcionarioMapper.toFuncionarioDTO(returnFuncionario(id));
+    public Funcionario findById(Long id) {
+     return returnFuncionario(id);
     }
 
     @Override
